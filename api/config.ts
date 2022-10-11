@@ -6,12 +6,12 @@
  * ! Don't put your privateKey inside this file directly!
  */
 export default {
-  viewId: '205703100',
+  viewId: 'TODO:205703100',
   auth: {
-    projectId: 'ga-hit-count',
+    projectId: 'market-visit-count',
     privateKey: process.env.PRIVATE_KEY,
-    clientEmail: 'blog-hit-count@ga-hit-count.iam.gserviceaccount.com',
+    clientEmail: 'account1@market-visit-count.iam.gserviceaccount.com',
   },
-  allFilter: ['/20'],
+  allFilter: ['/'],
   startDate: '2010-01-01',
 }
