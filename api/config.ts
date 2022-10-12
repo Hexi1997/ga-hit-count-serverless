@@ -14,4 +14,5 @@ export default {
   },
   allFilter: ['/'],
   startDate: '2010-01-01',
+  endDate: 'today'
 }
