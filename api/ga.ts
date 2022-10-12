@@ -9,7 +9,7 @@ import config from './config'
 export default async (req: NowRequest, resp: NowResponse) => {
   // API query page parameter
   const { page = '' } = req.query
-  const analyticsDataClient = new BetaAnalyticsDataClient({ projectId: config.auth.projectId, credentials: { client_email: config.auth.clientEmail, private_key: config.auth.privateKey } });
+  const analyticsDataClient = new BetaAnalyticsDataClient({ projectId: config.auth.projectId, credentials: { client_email: config.auth.clientEmail, private_key: config.auth.privateKey }, scopes: 'https://www.googleapis.com/auth/analytics.readonly' });
 
 
   // page path filter
@@ -24,27 +24,27 @@ export default async (req: NowRequest, resp: NowResponse) => {
 
 
   // Runs a simple report.
-    const [response] = await analyticsDataClient.runReport({
-      property: `properties/${config.propertyId}`,
-      dateRanges: [
-        {
-          startDate: '2020-03-31',
-          endDate: 'today',
-        },
-      ],
-      dimensions: [
-        {
-          name: 'city',
-        },
-      ],
-      metrics: [
-        {
-          name: 'activeUsers',
-        },
-      ],
-    });
+  const [response] = await analyticsDataClient.runReport({
+    property: `properties/${config.propertyId}`,
+    dateRanges: [
+      {
+        startDate: '2020-03-31',
+        endDate: 'today',
+      },
+    ],
+    dimensions: [
+      {
+        name: 'city',
+      },
+    ],
+    metrics: [
+      {
+        name: 'activeUsers',
+      },
+    ],
+  });
 
 
-    resp.setHeader('Access-Control-Allow-Origin', '*')
-    resp.status(200).send(response)
+  resp.setHeader('Access-Control-Allow-Origin', '*')
+  resp.status(200).send(response)
 }
