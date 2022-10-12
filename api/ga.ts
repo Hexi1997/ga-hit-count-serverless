@@ -34,17 +34,17 @@ export default async (req: NowRequest, resp: NowResponse) => {
     ],
     metrics: [
       {
-        expression: 'ga:pageviews',
+        name: 'screenPageViews',
       },
     ],
     dimensions: [
       {
-        name: 'ga:pagePath',
+        name: 'pagePath',
       },
     ],
     dimensionFilter: {
         filter: {
-          fieldName: 'ga:pagePath',
+          fieldName: 'pagePath',
           stringFilter: {
             matchType: "EXACT",
             value: page as string,
