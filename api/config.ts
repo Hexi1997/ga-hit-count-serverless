@@ -6,7 +6,7 @@
  * ! Don't put your privateKey inside this file directly!
  */
 export default {
-  viewId: 'TODO:205703100',
+  viewId: '4137951381',
   auth: {
     projectId: 'market-visit-count',
     privateKey: process.env.PRIVATE_KEY,
