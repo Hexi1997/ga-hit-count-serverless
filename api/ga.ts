@@ -13,14 +13,14 @@ export default async (req: NowRequest, resp: NowResponse) => {
 
 
   // page path filter
-  const filter =
-    page === ''
-      ? { dimensionName: 'ga:pagePath', operator: 'BEGINS_WITH', expressions: config.allFilter }
-      : {
-        dimensionName: 'ga:pagePath',
-        operator: 'EXACT',
-        expressions: [page] as string[],
-      }
+  // const filter =
+  //   page === ''
+  //     ? { dimensionName: 'ga:pagePath', operator: 'BEGINS_WITH', expressions: config.allFilter }
+  //     : {
+  //       dimensionName: 'ga:pagePath',
+  //       operator: 'EXACT',
+  //       expressions: [page] as string[],
+  //     }
 
 
   // Runs a simple report.
@@ -28,20 +28,29 @@ export default async (req: NowRequest, resp: NowResponse) => {
     property: `properties/${config.propertyId}`,
     dateRanges: [
       {
-        startDate: '2020-03-31',
-        endDate: 'today',
-      },
-    ],
-    dimensions: [
-      {
-        name: 'city',
+        startDate: config.startDate,
+        endDate: config.endDate,
       },
     ],
     metrics: [
       {
-        name: 'activeUsers',
+        expression: 'ga:pageviews',
       },
     ],
+    dimensions: [
+      {
+        name: 'ga:pagePath',
+      },
+    ],
+    dimensionFilter: {
+        filter: {
+          fieldName: 'ga:pagePath',
+          stringFilter: {
+            matchType: "EXACT",
+            value: page as string,
+          }
+        },
+      },
   });
 
 
