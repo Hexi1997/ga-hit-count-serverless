@@ -1,5 +1,6 @@
 import { NowRequest, NowResponse } from '@vercel/node'
 import { google } from 'googleapis'
+import { BetaAnalyticsDataClient } from '@google-analytics/data'
 import config from './config'
 
 /**
@@ -8,81 +9,42 @@ import config from './config'
 export default async (req: NowRequest, resp: NowResponse) => {
   // API query page parameter
   const { page = '' } = req.query
+  const analyticsDataClient = new BetaAnalyticsDataClient({ projectId: config.auth.projectId, credentials: { client_email: config.auth.clientEmail, private_key: config.auth.privateKey } });
+
 
   // page path filter
   const filter =
     page === ''
       ? { dimensionName: 'ga:pagePath', operator: 'BEGINS_WITH', expressions: config.allFilter }
       : {
-          dimensionName: 'ga:pagePath',
-          operator: 'EXACT',
-          expressions: [page] as string[],
-        }
+        dimensionName: 'ga:pagePath',
+        operator: 'EXACT',
+        expressions: [page] as string[],
+      }
 
-  const auth = new google.auth.GoogleAuth({
-    credentials: {
-      private_key: config.auth.privateKey,
-      client_email: config.auth.clientEmail,
-    },
-    projectId: config.auth.projectId,
-    scopes: 'https://www.googleapis.com/auth/analytics.readonly',
-  })
-  const client = await auth.getClient()
-  const analyticsreporting = google.analyticsreporting({
-    version: 'v4',
-    auth: client,
-  })
 
-  const gaReport = await analyticsreporting.reports.batchGet({
-    requestBody: {
-      reportRequests: [
+  // Runs a simple report.
+    const [response] = await analyticsDataClient.runReport({
+      property: `properties/${config.propertyId}`,
+      dateRanges: [
         {
-          viewId: config.viewId,
-          dateRanges: [
-            {
-              startDate: config.startDate,
-              endDate: 'today',
-            },
-          ],
-          metrics: [
-            {
-              expression: 'ga:pageviews',
-            },
-          ],
-          dimensions: [
-            {
-              name: 'ga:pagePath',
-            },
-          ],
-          dimensionFilterClauses: [
-            {
-              filters: [filter],
-            },
-          ],
-          orderBys: [
-            {
-              fieldName: 'ga:pageviews',
-              sortOrder: 'DESCENDING',
-            },
-          ],
+          startDate: '2020-03-31',
+          endDate: 'today',
         },
       ],
-    },
-  })
-  const report = gaReport.data.reports[0].data
+      dimensions: [
+        {
+          name: 'city',
+        },
+      ],
+      metrics: [
+        {
+          name: 'activeUsers',
+        },
+      ],
+    });
 
-  let res = []
-  if (report.totals[0].values[0] === '0') {
-    res = [{ page: page, hit: '0' }]
-  } else {
-    report.rows.forEach(r => {
-      // Remove all pages with querys
-      if (!r.dimensions[0].includes('?')) {
-        res.push({ page: r.dimensions[0], hit: r.metrics[0].values[0] })
-      }
-    })
-  }
 
-  resp.setHeader('Access-Control-Allow-Origin', '*')
-  resp.status(200).send(res)
+    resp.setHeader('Access-Control-Allow-Origin', '*')
+    resp.status(200).send(response)
 }
