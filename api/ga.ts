@@ -7,7 +7,7 @@ import config from './config'
  */
 export default async (req: NowRequest, resp: NowResponse) => {
   // API query page parameter
-  const { page = '' } = req.query
+  const page = decodeURIComponent(req.query.page || "");
   const analyticsDataClient = new BetaAnalyticsDataClient({ projectId: config.auth.projectId, credentials: { client_email: config.auth.clientEmail, private_key: config.auth.privateKey }, scopes: 'https://www.googleapis.com/auth/analytics.readonly' });
 
   // Runs a simple report.
